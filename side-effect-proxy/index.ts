@@ -1,5 +1,8 @@
 import { start as startInboundApp } from './inboundApp';
 import { start as startOutboundApp } from './outboundApp';
+import { createRecorder } from "./recorder";
 
-startInboundApp();
-startOutboundApp();
+const recorder = createRecorder();
+
+startInboundApp({ recorder });
+startOutboundApp({ recorder });

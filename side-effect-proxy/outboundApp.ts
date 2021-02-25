@@ -1,9 +1,13 @@
 import * as httpProxy from "http-proxy";
 import * as express from "express";
 import { router as extRouter } from "./extRouter";
+import { Recorder } from "./recorder";
 
-
-export const start = () => {
+export const start = ({
+  recorder
+}: {
+  recorder: Recorder
+}) => {
   const proxy = httpProxy.createProxyServer();
   
   const app = express();
