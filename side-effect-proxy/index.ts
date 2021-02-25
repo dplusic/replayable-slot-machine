@@ -21,9 +21,14 @@ inboundApp.listen(10001);
 const outboundApp = express();
 
 outboundApp.use('/', (req, res) => {
-  if (req.host === 'side-effect-proxy-random') {
+  if (req.host === 'side-effect-proxy-ext') {
     res.json({
-      random: Math.random(),
+      date: Date.now(),
+      randoms: [
+        Math.random(),
+        Math.random(),
+        Math.random(),
+      ]
     })
   } else {
     proxy.web(req, res, {
