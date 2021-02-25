@@ -36,18 +36,15 @@ const pull = (weightInfos: WeightInfo[], randoms: number[]) => {
     emoji,
     p: weight / totalWeight
   }));
-  const pAccs = ps
+  const pAccs = ps.slice(1)
     .reduce((pre, cur) => (
       [...pre, {
         emoji: cur.emoji,
         p: pre[pre.length - 1].p + cur.p
       }]
     ), [ps[0]]);
-  
   return randoms
-    .map(random => pAccs.reduce((pre, cur) =>
-      random >= pre.p ? cur : pre
-    ))
+    .map(random => pAccs.reduce((pre, cur) => random < pre.p ? pre : cur))
     .map(({ emoji }) => emoji)
 };
 
