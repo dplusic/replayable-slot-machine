@@ -9,7 +9,7 @@ export const start = () => {
   const app = express();
   
   app.use('/', (req, res, next) => {
-    if (req.host.startsWith('side-effect-proxy-ext')) {
+    if (req.hostname.startsWith('side-effect-proxy-ext')) {
       return extRouter(req, res, next);
     } else {
       proxy.web(req, res, {
