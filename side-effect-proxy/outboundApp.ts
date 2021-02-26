@@ -28,7 +28,7 @@ export const start = ({
       return extRouter(req, res, next);
     } else {
       proxy.web(req, res, {
-        target: req.url,
+        target: req.url.substring(0, req.url.indexOf('/', 8)),
       });
     }
   });
