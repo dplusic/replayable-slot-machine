@@ -1,4 +1,6 @@
-import { createIORecord, IORecord } from "./record";
+import { createIORecord, IORecord, ResponseRecord } from "./record";
+import { Response } from "express";
+import { pickResponseBody } from "./responseBodyPicker";
 
 export type Recorder = {
   
@@ -6,6 +8,10 @@ export type Recorder = {
     seId: string,
     ioRecord: IORecord,
   ) => void;
+  
+  get: (
+    seId: string,
+  ) => IORecord,
   
   dumpAndRemove: (
     seId: string,
@@ -21,6 +27,12 @@ export const createRecorder = (): Recorder => {
   ) => {
     records[seId] = ioRecord;
   };
+  
+  const get = (
+    seId: string,
+  ) => {
+    return records[seId];
+  }
   
   const dump = (
     seId: string
@@ -43,6 +55,25 @@ export const createRecorder = (): Recorder => {
   
   return {
     add,
+    get,
     dumpAndRemove,
   }
+}
+
+export const recordResponse = (responseRecord: ResponseRecord, res: Response, onFinish?: () => void) => {
+  
+  responseRecord.body = '';
+  
+  pickResponseBody(res, chunk => {
+    responseRecord.body += chunk.toString();
+  })
+  
+  res.on('finish', () => {
+    responseRecord.statusCode = res.statusCode;
+    responseRecord.statusMessage = res.statusMessage;
+    
+    if (onFinish) {
+      onFinish();
+    }
+  });
 }

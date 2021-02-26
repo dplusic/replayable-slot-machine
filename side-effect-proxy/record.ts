@@ -33,3 +33,16 @@ export const createIORecord = ({
     sideEffects: [],
   }
 }
+
+export const createSideEffectRecord = ({
+  url,
+}: {
+  url: string,
+}): SideEffectRecord => {
+  return {
+    request: {
+      url,
+    },
+    response: {},
+  }
+}

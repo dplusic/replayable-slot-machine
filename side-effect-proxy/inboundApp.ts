@@ -1,7 +1,7 @@
 import * as express from "express";
 import { v4 as uuidv4 } from "uuid";
 import * as httpProxy from "http-proxy";
-import { Recorder } from "./recorder";
+import { Recorder, recordResponse } from "./recorder";
 import { createIORecord } from "./record";
 
 export const start = ({
@@ -25,19 +25,7 @@ export const start = ({
     });
     
     recorder.add(seId, ioRecord);
-    
-    ioRecord.response.body = '';
-    
-    const oldWrite = res.end;
-    res.write = function (data: Buffer) {
-      ioRecord.response.body += data.toString();
-      return oldWrite.apply(res, arguments);
-    }
-    
-    res.on('finish', () => {
-      ioRecord.response.statusCode = res.statusCode;
-      ioRecord.response.statusMessage = res.statusMessage;
-      
+    recordResponse(ioRecord.response, res, () => {
       recorder.dumpAndRemove(seId);
     });
     
