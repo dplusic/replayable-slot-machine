@@ -3,11 +3,14 @@ import * as express from "express";
 import { router as extRouter } from "./extRouter";
 import { Recorder, recordResponse } from "./recorder";
 import { createSideEffectRecord } from "./record";
+import { Config } from "./config";
 
 export const start = ({
-  recorder
+  config,
+  recorder,
 }: {
-  recorder: Recorder
+  config: Config,
+  recorder: Recorder,
 }) => {
   const proxy = httpProxy.createProxyServer();
   
@@ -15,7 +18,7 @@ export const start = ({
   
   app.use('/', (req, res, next) => {
     
-    const seId = req.headers['x-side-effect-id'] as string;
+    const seId = req.headers[config.sideEffectIdHeaderKey] as string;
     const ioRecord = recorder.get(seId);
     
     const sideEffectRecord = createSideEffectRecord({
@@ -33,5 +36,5 @@ export const start = ({
     }
   });
   
-  app.listen(10002);
+  app.listen(config.outboundPort);
 };

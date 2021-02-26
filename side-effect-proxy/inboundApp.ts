@@ -3,11 +3,14 @@ import { v4 as uuidv4 } from "uuid";
 import * as httpProxy from "http-proxy";
 import { Recorder, recordResponse } from "./recorder";
 import { createIORecord } from "./record";
+import { Config } from "./config";
 
 export const start = ({
-  recorder
+  config,
+  recorder,
 }: {
-  recorder: Recorder
+  config: Config,
+  recorder: Recorder,
 }) => {
   const proxy = httpProxy.createProxyServer();
   
@@ -17,7 +20,7 @@ export const start = ({
     const seId = uuidv4();
     
     const additionalHeaders = {
-      'x-side-effect-id': seId,
+      [config.sideEffectIdHeaderKey]: seId,
     };
     
     const ioRecord = createIORecord({
@@ -30,10 +33,10 @@ export const start = ({
     });
     
     proxy.web(req, res, {
-      target: 'http://localhost:10003',
+      target: config.appTarget,
       headers: additionalHeaders,
     });
   });
   
-  app.listen(10001);
+  app.listen(config.inboundPort);
 };
