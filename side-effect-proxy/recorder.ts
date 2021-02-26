@@ -1,4 +1,4 @@
-import { createIORecord, IORecord, ResponseRecord } from "./record";
+import { IORecord, ResponseRecord } from "./record";
 import { Response } from "express";
 import { pickResponseBody } from "./responseBodyPicker";
 
