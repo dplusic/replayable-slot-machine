@@ -1,6 +1,8 @@
+import { promises as fsp } from 'fs'
 import { IORecord, ResponseRecord } from "./record";
 import { Response } from "express";
 import { pickResponseBody } from "./responseBodyPicker";
+import { Config } from "./config";
 
 export type Recorder = {
   
@@ -18,7 +20,11 @@ export type Recorder = {
   ) => void
 }
 
-export const createRecorder = (): Recorder => {
+export const createRecorder = ({
+  config,
+}: {
+  config: Config,
+}): Recorder => {
   const records: { [seId: string]: IORecord } = {}
   
   const add = (
@@ -37,7 +43,10 @@ export const createRecorder = (): Recorder => {
   const dump = (
     seId: string
   ) => {
-    console.log(JSON.stringify(records[seId], null, 2));  // TODO
+    const record = records[seId];
+    console.log(JSON.stringify(record, null, 2));
+    fsp.appendFile(config.recordsPath, JSON.stringify(record) + '\n')
+      .catch(e => console.error(e));
   }
   
   const remove = (

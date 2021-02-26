@@ -5,6 +5,8 @@ export type Config = {
   appTarget: string,
   
   sideEffectIdHeaderKey: string,
+  
+  recordsPath: string,
 };
 
 export const getConfig = (): Config => ({
@@ -14,4 +16,6 @@ export const getConfig = (): Config => ({
   appTarget: 'http://localhost:10003',
   
   sideEffectIdHeaderKey: 'x-side-effect-id',
+  
+  recordsPath: '../common/records.jsonl'
 });

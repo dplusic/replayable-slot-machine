@@ -4,7 +4,10 @@ import { createRecorder } from "./recorder";
 import { getConfig } from './config'
 
 const config = getConfig();
-const recorder = createRecorder();
+
+const recorder = createRecorder({
+  config,
+});
 
 startInboundApp({
   config,
