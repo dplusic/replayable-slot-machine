@@ -1,34 +1,29 @@
 import * as express from 'express';
+import { WeightInfo } from 'common/weight';
 
 const HttpProxyAgent = require('http-proxy-agent');
 const fetch = require('node-fetch');
 
 const app = express();
 
-type WeightInfo = {
-  emoji: string;
-  weight: number;
-}
-
-const WEIGHT_INFOS: WeightInfo[] = [
-  {
-    emoji: '7️',
-    weight: 1,
-  },
-  {
-    emoji: '🌿',
-    weight: 5,
-  },
-  {
-    emoji: '🐞',
-    weight: 10,
-  },
-];
-
 type SideEffectProxyExtRes = {
   date: number,
   randoms: number[],
 }
+
+const fetchWithProxy = (url: string, headers: {}) =>
+  fetch(url, {
+    agent: new HttpProxyAgent('http://localhost:10002'),
+    headers: Object.entries(headers).filter(([k]) => k.startsWith('x-')),
+  })
+
+const fetchSideEffectProxyExt = (headers: {}): Promise<SideEffectProxyExtRes> =>
+  fetchWithProxy('http://side-effect-proxy-ext', headers)
+    .then(res => res.json())
+
+const fetchWeightInfos = (headers: {}): Promise<WeightInfo[]> =>
+  fetchWithProxy('http://localhost:10004/weights', headers)
+    .then(res => res.json())
 
 const pull = (weightInfos: WeightInfo[], randoms: number[]) => {
   const totalWeight = weightInfos.reduce((pre, cur) => pre + cur.weight, 0);
@@ -49,15 +44,15 @@ const pull = (weightInfos: WeightInfo[], randoms: number[]) => {
 };
 
 app.get('/pull', (req, res, next) => {
-  fetch('http://side-effect-proxy-ext', {
-    agent: new HttpProxyAgent('http://localhost:10002'),
-    headers: Object.entries(req.headers).filter(([k]) => k.startsWith('x-')),
-  })
-    .then(res => res.json())
-    .then((json: SideEffectProxyExtRes) => {
+  
+  Promise.all([
+    fetchSideEffectProxyExt(req.headers),
+    fetchWeightInfos(req.headers),
+  ])
+    .then(([sideEffectProxyExtRes, weightInfos]: [SideEffectProxyExtRes, WeightInfo[]]) => {
       res.json({
-        'date': new Date(json.date).toISOString(),
-        'result': pull(WEIGHT_INFOS, json.randoms),
+        'date': new Date(sideEffectProxyExtRes.date).toISOString(),
+        'result': pull(weightInfos, sideEffectProxyExtRes.randoms),
       })
     })
     .catch(next)
