@@ -29,7 +29,7 @@ export const start = ({
     
     recorder.add(seId, ioRecord);
     recordResponse(ioRecord.response, res, () => {
-      recorder.dumpAndRemove(seId);
+      recorder.finish(seId);
     });
     
     proxy.web(req, res, {

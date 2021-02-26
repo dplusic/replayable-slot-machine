@@ -13,7 +13,7 @@ export type Recorder = {
     seId: string,
   ) => IORecord,
   
-  dumpAndRemove: (
+  finish: (
     seId: string,
   ) => void
 }
@@ -46,7 +46,7 @@ export const createRecorder = (): Recorder => {
     delete records[seId];
   }
   
-  const dumpAndRemove = (
+  const finish = (
     seId: string,
   ) => {
     dump(seId);
@@ -56,7 +56,7 @@ export const createRecorder = (): Recorder => {
   return {
     add,
     get,
-    dumpAndRemove,
+    finish,
   }
 }
 
