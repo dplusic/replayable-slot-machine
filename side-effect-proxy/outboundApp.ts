@@ -1,5 +1,5 @@
-import * as httpProxy from "http-proxy";
-import * as express from "express";
+import httpProxy from "http-proxy";
+import express from "express";
 import { router as extRouter } from "./extRouter";
 import { Recorder, recordResponse } from "./recorder";
 import { createSideEffectRecord } from "./record";

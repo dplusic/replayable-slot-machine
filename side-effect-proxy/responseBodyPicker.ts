@@ -4,12 +4,12 @@ export const pickResponseBody = (res: Response, picker: (chunk: any) => void) =>
   const oldWrite = res.write;
   res.write = function (chunk: any) {
     picker(chunk);
-    return oldWrite.apply(res, arguments);
+    return oldWrite.apply(res, arguments as any);
   }
   
   const oldSend = res.send;
   res.send = function (chunk: any) {
     picker(chunk);
-    return oldSend.apply(res, arguments);
+    return oldSend.apply(res, arguments as any);
   }
 }
