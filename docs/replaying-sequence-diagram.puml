@@ -1,0 +1,24 @@
+@startuml
+
+participant "side-effect-proxy\n[replaying]" as sep
+participant "slot-api"
+
+== Request ==
+sep -> "slot-api" : slot-api/pull \n header[x-side-effect-id]=1
+activate sep #FFFF00
+note left : Load records &\nStart replaying
+
+== [Side Effect 1] Get Weight Info ==
+"slot-api" -> sep : weight-api/weights \n header[x-side-effect-id]=1
+sep -> "slot-api" : weight-api/weights response
+    
+== [Side Effect 2] Get Date and Random ==
+"slot-api" -> sep : sep-ext/get \n header[x-side-effect-id]=1
+sep --> "slot-api" : sep-ext/get response
+
+== Response ==
+"slot-api" --> sep: slot-api/pull response
+deactivate sep
+note left : Stop replaying &\nCompare response with record
+
+@enduml
