@@ -4,14 +4,27 @@ import { fetchThroughProxy, proxyMiddleware } from "./proxy";
 
 type SideEffectProxyExtRes = {
   date: number,
-  randoms: number[],
+  random1: number,
+  random2: number,
+  random3: number,
 }
 
 const app = express();
 app.use(proxyMiddleware());
 
 const fetchSideEffectProxyExt = (): Promise<SideEffectProxyExtRes> =>
-  fetchThroughProxy('http://side-effect-proxy-ext')
+  fetchThroughProxy('http://side-effect-proxy-ext/bulk', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      date: 'date',
+      random1: 'random',
+      random2: 'random',
+      random3: 'random',
+    }),
+  })
     .then(res => res.json())
 
 const fetchWeightInfos = (): Promise<WeightInfo[]> =>
@@ -44,7 +57,7 @@ app.get('/pull', (req, res, next) =>
     .then(([sideEffectProxyExtRes, weightInfos]: [SideEffectProxyExtRes, WeightInfo[]]) => {
       res.json({
         'date': new Date(sideEffectProxyExtRes.date).toISOString(),
-        'result': pull(weightInfos, sideEffectProxyExtRes.randoms),
+        'result': pull(weightInfos, [sideEffectProxyExtRes.random1, sideEffectProxyExtRes.random2, sideEffectProxyExtRes.random3]),
       })
     })
 );

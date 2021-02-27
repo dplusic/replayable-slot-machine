@@ -1,7 +1,7 @@
 import express from "express";
 import { AsyncLocalStorage } from "async_hooks";
 import fetch, * as Fetch from "node-fetch";
-import { headersArrayFromIncomingHttpHeaders } from "./util";
+import { headersArrayFromHeadersInit, headersArrayFromIncomingHttpHeaders } from "./util";
 
 const HttpProxyAgent = require('http-proxy-agent');
 
@@ -20,19 +20,28 @@ export const proxyMiddleware = () => (req: express.Request, res: express.Respons
   );
 }
 
-export const fetchThroughProxy = (url: string): Promise<Fetch.Response> => {
+export const fetchThroughProxy = (url: string, init?: Fetch.RequestInit): Promise<Fetch.Response> => {
   const asyncStorage = asyncLocalStorage.getStore();
   
-  let headers: string[][];
+  let reqHeaders: string[][];
   if (!asyncStorage) {
     console.warn("no async storage");
-    headers = [];
+    reqHeaders = [];
   } else {
-    headers = headersArrayFromIncomingHttpHeaders(asyncStorage.req.headers)
+    reqHeaders = headersArrayFromIncomingHttpHeaders(asyncStorage.req.headers)
       .filter(([k]) => k.startsWith('x-'));
   }
   
+  let headers: string[][];
+  if (init && init.headers) {
+    init.headers
+    headers = [...headersArrayFromHeadersInit(init.headers), ...reqHeaders]
+  } else {
+    headers = reqHeaders;
+  }
+  
   return fetch(url, {
+    ...init,
     agent: new HttpProxyAgent('http://localhost:10002'),
     headers,
   });
