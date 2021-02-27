@@ -8,16 +8,40 @@ const storage
 } = {
   weightInfos: [
     {
-      emoji: '7️',
+      emoji: '7️⃣',
       weight: 1,
     },
     {
-      emoji: '🌿',
+      emoji: '🍉',
+      weight: 2,
+    },
+    {
+      emoji: '🍇',
+      weight: 3,
+    },
+    {
+      emoji: '🍋',
+      weight: 4,
+    },
+    {
+      emoji: '🍌',
       weight: 5,
     },
     {
-      emoji: '🐞',
-      weight: 10,
+      emoji: '🏆',
+      weight: 6,
+    },
+    {
+      emoji: '🍒',
+      weight: 7,
+    },
+    {
+      emoji: '📚',
+      weight: 8,
+    },
+    {
+      emoji: '🟠',
+      weight: 9,
     },
   ]
 };
@@ -44,7 +68,7 @@ app.get('/weights/edit', (req, res, next) => {
     <p>
         <textarea
             name="weightInfos"
-            style="width: 300px; height: 600px;"
+            style="width: 300px; height: 700px;"
         >${JSON.stringify(storage.weightInfos, null, 2)}</textarea>
     </p>
 </form>
