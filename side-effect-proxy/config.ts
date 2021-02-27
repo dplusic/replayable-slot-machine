@@ -17,5 +17,5 @@ export const getConfig = (): Config => ({
   
   sideEffectIdHeaderKey: 'x-side-effect-id',
   
-  recordsPath: '../common/records.jsonl'
+  recordsPath: '../records/records.jsonl'
 });

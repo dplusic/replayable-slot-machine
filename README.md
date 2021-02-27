@@ -31,7 +31,7 @@ A demo of Side Effect Recorder. Entry in the yyt #22.
 1. Pull slot machine
     * http://localhost:10000
 1. Check records
-    * repository/common/records.jsonl
+    * repository/records/records.jsonl
 
 
 ### Replaying
