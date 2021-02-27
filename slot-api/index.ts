@@ -36,8 +36,7 @@ const pull = (weightInfos: WeightInfo[], randoms: number[]) => {
     .map(({ emoji }) => emoji)
 };
 
-app.get('/pull', (req, res, next) => {
-  
+app.get('/pull', (req, res, next) =>
   Promise.all([
     fetchSideEffectProxyExt(),
     fetchWeightInfos(),
@@ -48,7 +47,6 @@ app.get('/pull', (req, res, next) => {
         'result': pull(weightInfos, sideEffectProxyExtRes.randoms),
       })
     })
-    .catch(next)
-});
+);
 
 app.listen(10003);
