@@ -1,0 +1,34 @@
+@startuml
+
+participant "app-fe"
+participant "weight-api"
+
+box "slot-api" #FBFBFB
+participant "side-effect-proxy\n[recording]" as sep
+participant "slot-api"
+end box
+
+== Request ==
+"app-fe" -> sep : slot-api/pull
+sep -> "slot-api" : slot-api/pull \n header[x-side-effect-id]=1
+activate sep #FFFF00
+note left : Start recording
+
+== [Side Effect 1] Get Weight Info ==
+"slot-api" -> sep : weight-api/weights \n header[x-side-effect-id]=1
+sep -> "weight-api" : weight-api/weights
+"weight-api" --> sep : weight-api/weights response
+sep -> "slot-api" : weight-api/weights response
+    
+== [Side Effect 2] Get Date and Random ==
+"slot-api" -> sep : sep-ext/get \n header[x-side-effect-id]=1
+sep -> sep : sep-ext/get
+sep --> "slot-api" : sep-ext/get response
+
+== Response ==
+"slot-api" --> sep: slot-api/pull response
+deactivate sep
+note left : Stop recording
+sep --> "app-fe" : slot-api/pull response
+
+@enduml
