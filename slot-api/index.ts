@@ -1,28 +1,21 @@
-import * as express from 'express';
+import express from 'express';
 import { WeightInfo } from 'common/weight';
-
-const HttpProxyAgent = require('http-proxy-agent');
-const fetch = require('node-fetch');
-
-const app = express();
+import { fetchThroughProxy, proxyMiddleware } from "./proxy";
 
 type SideEffectProxyExtRes = {
   date: number,
   randoms: number[],
 }
 
-const fetchWithProxy = (url: string, headers: {}) =>
-  fetch(url, {
-    agent: new HttpProxyAgent('http://localhost:10002'),
-    headers: Object.entries(headers).filter(([k]) => k.startsWith('x-')),
-  })
+const app = express();
+app.use(proxyMiddleware());
 
-const fetchSideEffectProxyExt = (headers: {}): Promise<SideEffectProxyExtRes> =>
-  fetchWithProxy('http://side-effect-proxy-ext', headers)
+const fetchSideEffectProxyExt = (): Promise<SideEffectProxyExtRes> =>
+  fetchThroughProxy('http://side-effect-proxy-ext')
     .then(res => res.json())
 
-const fetchWeightInfos = (headers: {}): Promise<WeightInfo[]> =>
-  fetchWithProxy('http://localhost:10004/weights', headers)
+const fetchWeightInfos = (): Promise<WeightInfo[]> =>
+  fetchThroughProxy('http://localhost:10004/weights')
     .then(res => res.json())
 
 const pull = (weightInfos: WeightInfo[], randoms: number[]) => {
@@ -46,8 +39,8 @@ const pull = (weightInfos: WeightInfo[], randoms: number[]) => {
 app.get('/pull', (req, res, next) => {
   
   Promise.all([
-    fetchSideEffectProxyExt(req.headers),
-    fetchWeightInfos(req.headers),
+    fetchSideEffectProxyExt(),
+    fetchWeightInfos(),
   ])
     .then(([sideEffectProxyExtRes, weightInfos]: [SideEffectProxyExtRes, WeightInfo[]]) => {
       res.json({
