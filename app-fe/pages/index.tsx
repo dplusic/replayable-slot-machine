@@ -7,6 +7,16 @@ import Date from '../components/date'
 import { GetStaticProps } from 'next'
 import { useState } from "react";
 
+const onPull = ({
+  setSlots
+}: {
+  setSlots: (slots: string[]) => void
+}) => {
+  return fetch('/api/pull')
+    .then(res => res.json())
+    .then(({ result }) => setSlots(result))
+}
+
 export default function Home({
   allPostsData,
 }: {
@@ -17,7 +27,7 @@ export default function Home({
   }[],
 }) {
   
-  const [slots, setSlots] = useState(['0', '0', '0']);
+  const [slots, setSlots] = useState([] as string[]);
   
   return (
     <Layout home>
@@ -27,7 +37,7 @@ export default function Home({
       
       <section className={`${utilStyles.headingMd} ${utilStyles.center}`}>
         <p>{`| ${slots.join(' | ')} |`}</p>
-        <button onClick={() => setSlots(['1', '1', '1'])}>
+        <button onClick={() => onPull({ setSlots })}>
           PULL
         </button>
       </section>
