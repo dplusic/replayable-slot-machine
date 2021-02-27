@@ -1,7 +1,7 @@
 import httpProxy from "http-proxy";
 import express from "express";
 import { router as extRouter } from "./extRouter";
-import { Recorder, recordResponse } from "./recorder";
+import { Recorder, recordRequest, recordResponse } from "./recorder";
 import { createSideEffectRecord } from "./record";
 import { Config } from "./config";
 
@@ -23,8 +23,10 @@ export const start = ({
     
     const sideEffectRecord = createSideEffectRecord({
       url: req.url,
+      body: req.body,
     });
     ioRecord.sideEffects.push(sideEffectRecord);
+    recordRequest(sideEffectRecord.request, req);
     recordResponse(sideEffectRecord.response, res);
     
     if (req.hostname.startsWith('side-effect-proxy-ext')) {

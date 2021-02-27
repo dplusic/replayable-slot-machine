@@ -22,8 +22,10 @@ export type IORecord = Record & {
 
 export const createIORecord = ({
   url,
+  body,
 }: {
   url: string,
+  body?: string,
 }): IORecord => {
   return {
     request: {
@@ -36,12 +38,15 @@ export const createIORecord = ({
 
 export const createSideEffectRecord = ({
   url,
+  body,
 }: {
   url: string,
+  body?: string
 }): SideEffectRecord => {
   return {
     request: {
       url,
+      body,
     },
     response: {},
   }

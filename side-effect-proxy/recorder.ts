@@ -1,6 +1,6 @@
 import { promises as fsp } from 'fs'
 import { IORecord, ResponseRecord } from "./record";
-import { Response } from "express";
+import { Request, Response } from "express";
 import { pickResponseBody } from "./responseBodyPicker";
 import { Config } from "./config";
 
@@ -67,6 +67,15 @@ export const createRecorder = ({
     get,
     finish,
   }
+}
+
+export const recordRequest = (requestRecord: ResponseRecord, req: Request) => {
+  
+  requestRecord.body = '';
+  
+  req.on('data', (data) => {
+    requestRecord.body += data.toString();
+  });
 }
 
 export const recordResponse = (responseRecord: ResponseRecord, res: Response, onFinish?: () => void) => {
